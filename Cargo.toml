@@ -1,0 +1,46 @@
+[package]
+name = "air_quality_station"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "air_quality_station"
+path = "./src/main.rs"
+test = false
+doctest = false
+bench = false
+
+[dependencies]
+esp-backtrace = { version = "0.17.0", features = ["esp32c6", "panic-handler", "println"] }
+
+esp-hal-embassy = { version = "0.9.0", features = ["esp32c6"] } 
+embassy-executor = { version = "0.7.0", features = ["nightly"] }
+embedded-hal = "=1.0.0"
+esp-hal = { version = "1.0.0-beta.1", features = ["esp32c6", "unstable"] }
+critical-section = "1.2.0"
+
+esp-println = { version = "0.15.0", features = ["esp32c6", "log-04"] }
+log = { version = "0.4" }
+
+
+esp-hal-smartled = { git = "https://github.com/esp-rs/esp-hal-community.git", package = "esp-hal-smartled", branch = "main", features = ["esp32c6"]}
+smart-leds = "0.4.0"
+heapless = "0.8"
+ens160-aq = "0.2.11"
+ssd1306 = "0.10.0"
+embedded-graphics = "0.8.1" 
+embassy-time = "0.5.0"
+
+[profile.dev]
+# Rust debug is too slow.
+# For debug builds always builds with some optimization
+opt-level = "s"
+
+[profile.release]
+codegen-units    = 1     # LLVM can perform better optimizations using a single thread
+debug            = 2
+debug-assertions = false
+incremental      = false
+lto              = 'fat'
+opt-level        = 's'
+overflow-checks  = false
