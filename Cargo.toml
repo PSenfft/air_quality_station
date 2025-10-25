@@ -11,23 +11,23 @@ doctest = false
 bench = false
 
 [dependencies]
-esp-backtrace = { version = "0.17.0", features = ["esp32c6", "panic-handler", "println"] }
+esp-backtrace = { version = "0.18.0", features = ["esp32c6", "panic-handler", "println"] }
 esp-bootloader-esp-idf = "0.1.0"
 embedded-hal = "1.0.0"
-esp-hal = { version = "1.0.0-beta.1", features = ["esp32c6", "unstable"] }
+esp-hal = { version = "1.0.0-rc.1", features = ["esp32c6", "unstable"] }
 
 embassy-embedded-hal = "0.5.0"
-esp-hal-embassy = { version = "0.9.1", features = ["esp32c6"] } 
-embassy-executor = { version = "0.7.0", features = ["nightly"] }
-embassy-sync = { version = "0.7.2", features = ["defmt"] }
+esp-rtos = { version = "0.1.1", features = ["embassy", "esp32c6"] } 
+embassy-executor = { version = "0.9.1", features = ["nightly"] }
+embassy-sync = { version = "0.7.2", features = ["log"] }
 embassy-time = "0.5.0"
 
 critical-section = "1.2.0"
 
-esp-println = { version = "0.15.0", features = ["esp32c6", "log-04"] }
-log = { version = "0.4" }
+esp-println = { version = "0.16.0", features = ["esp32c6", "log-04"] }
+log = "0.4" 
 
-esp-hal-smartled = { git = "https://github.com/esp-rs/esp-hal-community.git", package = "esp-hal-smartled", branch = "main", features = ["esp32c6"]}
+#esp-hal-smartled = { git = "https://github.com/esp-rs/esp-hal-community.git", package = "esp-hal-smartled", branch = "main", features = ["esp32c6"]}
 smart-leds = "0.4.0"
 heapless = "0.8"
 ens160-aq = {version = "0.2", features = ["async"]}
@@ -35,7 +35,6 @@ ssd1306 = "0.10.0"
 embedded-graphics = "0.8.1" 
 
 static_cell = "2.1.1"
-
 
 [profile.dev]
 # Rust debug is too slow.

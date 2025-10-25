@@ -3,13 +3,15 @@
 #![feature(type_alias_impl_trait)]
 #![feature(impl_trait_in_assoc_type)]
 
+
 use embassy_embedded_hal::shared_bus::asynch::i2c::{self, I2cDevice};
-use embassy_executor::Spawner;
 use embassy_sync::{blocking_mutex::raw::NoopRawMutex, mutex::Mutex};
 use embassy_time::{Duration, Timer};
+use esp_rtos;
+use esp_hal::timer::timg::TimerGroup;
 use esp_hal::{Async, i2c::master};
-use esp_hal::{clock::CpuClock, i2c::master::Config, time::Rate, timer::systimer::SystemTimer};
-use esp_hal_embassy;
+use esp_hal::{clock::CpuClock, i2c::master::Config, time::Rate};
+use esp_hal::interrupt::software::SoftwareInterruptControl;
 use esp_println::logger::init_logger;
 use log::{error, info};
 use static_cell::StaticCell;
@@ -18,18 +20,19 @@ mod sense;
 
 esp_bootloader_esp_idf::esp_app_desc!();
 
-#[esp_hal_embassy::main]
-async fn main(spawner: Spawner) {
+#[esp_rtos::main]
+async fn main(spawner: embassy_executor::Spawner) {
     /************* init ******************/
     let config = esp_hal::Config::default().with_cpu_clock(CpuClock::max());
     let p = esp_hal::init(config);
+
+    let timg0 = TimerGroup::new(p.TIMG0);
+    let software_interrupt = SoftwareInterruptControl::new(p.SW_INTERRUPT);
+
+    esp_rtos::start(timg0.timer0, software_interrupt.software_interrupt0);
     init_logger(log::LevelFilter::Debug);
 
     info!("Starting up...");
-
-    let timer0 = SystemTimer::new(p.SYSTIMER);
-    esp_hal_embassy::init(timer0.alarm0);
-    init_logger(log::LevelFilter::Debug);
 
     static I2C_BUS: StaticCell<Mutex<NoopRawMutex, esp_hal::i2c::master::I2c<Async>>> =
         StaticCell::new();

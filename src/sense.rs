@@ -1,5 +1,5 @@
 
-use embassy_embedded_hal::shared_bus::{self, asynch::i2c::{self, I2cDevice}};
+use embassy_embedded_hal::shared_bus::asynch::i2c::I2cDevice;
 use embassy_executor::Spawner;
 use embassy_sync::{
     blocking_mutex::raw::{CriticalSectionRawMutex, NoopRawMutex},
@@ -7,9 +7,8 @@ use embassy_sync::{
 };
 use embassy_time::{Delay, Duration, Timer};
 use ens160_aq::Ens160;
-use ens160_aq::data::{InterruptPinConfig, Measurements};
 use esp_hal::{
-    Async, i2c::master::{Config, I2c}, interrupt::{bind_interrupt, status}, peripherals::{GPIO22, GPIO23, I2C0}, time::Rate
+    Async, i2c::master::I2c
 };
 use log::{error, info};
 
@@ -40,7 +39,7 @@ pub async fn sense_task(mut ens160: Ens160<I2cDevice<'static, NoopRawMutex, I2c<
     } 
 }
 
-async fn init_ens(i2c_dev: I2cDevice<'static, NoopRawMutex, I2c<'static, Async>>) -> Result<Ens160<I2cDevice<'_, NoopRawMutex, I2c<'static, Async>>, Delay>, &'static str>{
+async fn init_ens(i2c_dev: I2cDevice<'static, NoopRawMutex, I2c<'static, Async>>) -> Result<Ens160<I2cDevice<'static, NoopRawMutex, I2c<'static, Async>>, Delay>, &'static str>{
     let mut ens160 = Ens160::new(i2c_dev, Delay);
     if let Ok( success) =  ens160.initialize().await {
         if success {return Ok(ens160)}
