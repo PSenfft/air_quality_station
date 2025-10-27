@@ -17,6 +17,7 @@ use log::{error, info};
 use static_cell::StaticCell;
 
 mod sense;
+mod display;
 
 esp_bootloader_esp_idf::esp_app_desc!();
 
@@ -46,12 +47,16 @@ async fn main(spawner: embassy_executor::Spawner) {
     .into_async();
 
     let i2c_bus = &*I2C_BUS.init(Mutex::new(i2c));
-    let i2c_device: i2c::I2cDevice<'static, NoopRawMutex, master::I2c<'static, Async>> =
+    let i2c_sensor_device: i2c::I2cDevice<'static, NoopRawMutex, master::I2c<'static, Async>> =
+        I2cDevice::new(i2c_bus);
+
+    let i2c_display_device: i2c::I2cDevice<'static, NoopRawMutex, master::I2c<'static, Async>> =
         I2cDevice::new(i2c_bus);
 
     spawner.spawn(welcome_task()).unwrap();
 
-    let _ = sense::start_sense(spawner, i2c_device).await;
+    let _ = sense::start_sense(spawner, i2c_sensor_device).await;
+    let _ = display::start_display(spawner, i2c_display_device).await;
 }
 
 #[embassy_executor::task]

@@ -31,7 +31,7 @@ log = "0.4"
 smart-leds = "0.4.0"
 heapless = "0.8"
 ens160-aq = {version = "0.2", features = ["async"]}
-ssd1306 = "0.10.0"
+ssd1306 = {version = "0.10.0", features =["async"]}
 embedded-graphics = "0.8.1" 
 
 static_cell = "2.1.1"
